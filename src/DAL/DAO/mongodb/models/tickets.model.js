@@ -20,10 +20,11 @@ const ticketsSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    /*
     purchaser: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "users",
-    },
+    },*/
 });
 
 export const ticketsModel = mongoose.model("tickets", ticketsSchema);

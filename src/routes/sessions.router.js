@@ -2,30 +2,52 @@ import { Router } from "express";
 import { usersDao } from "../DAL/DAO/mongodb/users.dao.js";
 import { hashData, compareData, generateToken } from "../utils.js";
 import passport from "passport";
+import { transporter } from "../nodemailer.js";
 
 const router = Router();
 
 router.post("/signup", passport.authenticate("signup"), async (req, res) => {
     const { first_name, last_name, email, password, username } = req.body;
+    console.log("Signup info: \n",req.body,"\nEmail: \n",email);
+    const mailOptions = {
+        from: "Armando Ecommerce",
+        to: email,  // Usar la dirección de correo electrónico proporcionada en el formulario de registro
+        subject: "Bienvenido Coder",
+        html: `
+            <h1>Bienvenido a Armando Ecommerce</h1>
+            <p>Hola ${first_name},</p>
+            <p>Gracias por unirte a nuestra plataforma. Estamos emocionados de tenerte como parte de nuestra comunidad.</p>
+            <p>¡Explora nuestro catálogo y descubre las increíbles ofertas que tenemos para ti!</p>
+            <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en ponerte en contacto con nuestro equipo de soporte.</p>
+            <p>¡Que tengas una excelente experiencia de compra!</p>
+            <p>Atentamente,<br>El equipo de Ecommerce</p>
+        `
+    };
+
+    console.log("Mail enviado signup: ", email);
     
+    await transporter.sendMail(mailOptions);
+
     if (!first_name || !last_name || !email || !password || !username) {
-    return res.status(400).json({ message: "Some data is missing" });
+        return res.status(400).json({ message: "Some data is missing" });
     }
     try {
         const hashedPassword = await hashData(password);
         const existingUser = await usersDao.findByEmail(email);
         const redirectUrl = `/login`;
+
         if (existingUser) {
             return res.redirect(redirectUrl);
         }
-        const createdUser = await usersDao.createOne({...req.body, password:hashedPassword});
-        const userId = createdUser.id; 
-        
+
+        const createdUser = await usersDao.createOne({ ...req.body, password: hashedPassword });
+        const userId = createdUser.id;
         res.redirect(redirectUrl);
     } catch (error) {
-    res.status(500).json({ error });
+        res.status(500).json({ error });
     }
 });
+
 
 router.post("/login", passport.authenticate("login"),  async (req, res) => {
 const { email, password } = req.body;
@@ -70,6 +92,7 @@ try {
 router.get(
     "/current", passport.authenticate("jwt", {session: false}), async(req,res) =>{
         const {name} = req.body;
+
         console.log("Role de usuario: ", req.user.role);
         if (req.user.role === "user"){
             return res.status(403).json({message: "Hi! you have an user role"});
