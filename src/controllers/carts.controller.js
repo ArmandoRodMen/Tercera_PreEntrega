@@ -1,3 +1,4 @@
+import passport from 'passport';
 import { 
     createCart, 
     findCartById, 
@@ -13,6 +14,7 @@ import {
 } from "../services/carts.services.js";
 import CustomError from "../errors/error.generator.js";
 import { ErrorMessages } from "../errors/errors.enum.js";
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 export const createNewCart = async (req, res) => {
     try {
@@ -44,18 +46,22 @@ export const findCart = async (req, res) => {
 };
 
 export const addProduct = async (req, res) => {
-    const { idCart, idProduct } = req.params;
-    try {
-        const updatedCart = await addProductToCart(idCart, idProduct);
-        res.status(200).json({ message: "Product added to cart", cart: updatedCart });
-    } catch (error) {
-        //res.status(500).json({ message: "Error adding product to cart", error: error.message });
-        CustomError.generateError(
-            ErrorMessages.PRODUCT_NOT_ADDED_TO_CART,
-            500,
-            ErrorMessages.PRODUCT_NOT_ADDED_TO_CART
-        );
-    }
+    passport.authenticate('jwt', { session: false })(req, res, async () =>{
+        authMiddleware(['user'])(req, res, async () => {
+            const { idCart, idProduct } = req.params;
+            try {
+                const updatedCart = await addProductToCart(idCart, idProduct);
+                res.status(200).json({ message: "Product added to cart", cart: updatedCart });
+            } catch (error) {
+                //res.status(500).json({ message: "Error adding product to cart", error: error.message });
+                CustomError.generateError(
+                    ErrorMessages.PRODUCT_NOT_ADDED_TO_CART,
+                    500,
+                    ErrorMessages.PRODUCT_NOT_ADDED_TO_CART
+                );
+            }
+        });
+    });
 };
 
 export const getProductsInCart = async (req, res) => {
@@ -120,33 +126,41 @@ export const updateProductQuantity = async (req, res) => {
 };
 
 export const removeProductFromCart = async (req, res) => {
-    const { idCart, idProduct } = req.params;
-    try {
-        const updatedCart = await deleteProductInCart(idCart, idProduct);
-        res.status(200).json({ message: "Product removed from cart", cart: updatedCart });
-    } catch (error) {
-        //res.status(500).json({ message: "Error removing product from cart", error: error.message });
-        CustomError.generateError(
-            ErrorMessages.CAN_NOT_UPDATE_PRODUCT_QUANTITY,
-            500,
-            ErrorMessages.CAN_NOT_UPDATE_PRODUCT_QUANTITY
-        );
-    }
+    passport.authenticate('jwt', { session: false })(req, res, async () =>{
+        authMiddleware(['user'])(req, res, async () => {
+            const { idCart, idProduct } = req.params;
+            try {
+                const updatedCart = await deleteProductInCart(idCart, idProduct);
+                res.status(200).json({ message: "Product removed from cart", cart: updatedCart });
+            } catch (error) {
+                //res.status(500).json({ message: "Error removing product from cart", error: error.message });
+                CustomError.generateError(
+                    ErrorMessages.CAN_NOT_UPDATE_PRODUCT_QUANTITY,
+                    500,
+                    ErrorMessages.CAN_NOT_UPDATE_PRODUCT_QUANTITY
+                );
+            }
+        });
+    });
 };
 
 export const removeAllProductsFromCart = async (req, res) => {
-    const { idCart } = req.params;
-    try {
-        await deleteProductsInCart(idCart);
-        res.status(200).json({ message: "All products removed from cart", cartId: idCart });
-    } catch (error) {
-        //res.status(500).json({ message: "Error removing all products from cart", error: error.message });
-        CustomError.generateError(
-            ErrorMessages.REMOVE_ALL_PRODUCTS_FROM_CART,
-            500,
-            ErrorMessages.REMOVE_ALL_PRODUCTS_FROM_CART
-        );
-    }
+    passport.authenticate('jwt', { session: false })(req, res, async () =>{
+        authMiddleware(['user'])(req, res, async () => {
+            const { idCart } = req.params;
+            try {
+                await deleteProductsInCart(idCart);
+                res.status(200).json({ message: "All products removed from cart", cartId: idCart });
+            } catch (error) {
+                //res.status(500).json({ message: "Error removing all products from cart", error: error.message });
+                CustomError.generateError(
+                    ErrorMessages.REMOVE_ALL_PRODUCTS_FROM_CART,
+                    500,
+                    ErrorMessages.REMOVE_ALL_PRODUCTS_FROM_CART
+                );
+            };
+        });
+    });
 };
 
 export const updateAllProductsInCart = async (req, res) => {

@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const messagesSchema = new mongoose.Schema({
     username:{
-        type: String,
-        required: true,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "users",
     },
     message:{
         type: String,

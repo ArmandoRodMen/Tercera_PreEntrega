@@ -18,7 +18,7 @@ export const findByEmail = async (email) => {
 
 export const createOne = async (obj) => {
     const hashedPassword = hashData(obj.password);
-    const newObj = { ...obj, password: hashedPassword, cart: createdCart._id };
+    const newObj = { ...obj, password: hashedPassword, cart: createdCart._id, role: 'user'};
     const createdUser = await usersDao.createOne(newObj);
     return createdUser;
 };

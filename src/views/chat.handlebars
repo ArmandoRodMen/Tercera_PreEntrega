@@ -12,9 +12,9 @@
 </article>
 {{/each}}
 
-<form action="/chat" method="post">
+<form action="/api/chat" method="post">
         <div class="mb-3">
-            <input type="text" name="username" value="{{username}}" class="form-control" aria-label="Disabled input example" readonly>
+            <input type="text" name="username" class="form-control" value="{{username}}" aria-label="Disabled input example" readonly>
         </div>
         <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">Manda un mensaje</label>

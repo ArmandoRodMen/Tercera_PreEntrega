@@ -40,6 +40,7 @@ export const ErrorMessages = {
   CAN_NOT_FIND_PRODUCT_BY_ID: "Can not find product by id",
   CAN_NOT_CREATE_PRODUCT: "Can not create product",
   CAN_NOT_DELETE_PRODUCT: "Can not delete product",
+  CAN_NOT_UPDATE_PRODUCT:"Can not update product",
 
   //SESSIONS
   CAN_NOT_CREATE_SESSION: "Can not create session"

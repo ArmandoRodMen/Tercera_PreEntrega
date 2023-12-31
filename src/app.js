@@ -57,7 +57,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/cookie", cookieRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/users", usersRouter);
-app.use("/chat", messageRouter);
+app.use("/api/chat", messageRouter);
 app.use("/", viewsRouter);
 
 app.get("/mockingproducts",(req, res) =>{
